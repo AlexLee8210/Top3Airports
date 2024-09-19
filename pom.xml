@@ -7,7 +7,7 @@
 	<name>Hadoop MapReduce</name>
 	<description>A Hadoop MapReduce example </description>
 	<groupId>edu.cs.utexas.HadoopEx</groupId>
-	<artifactId>topKHadoop</artifactId>
+	<artifactId>Top3Airports</artifactId>
 	<version>0.1-SNAPSHOT</version>
 
 
