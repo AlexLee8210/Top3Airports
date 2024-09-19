@@ -58,7 +58,7 @@ public class TopKReducer extends  Reducer<Text, IntWritable, Text, IntWritable> 
        }
 
        // keep the priorityQueue size <= heapSize
-       while (pq.size() > 10) {
+       while (pq.size() > 3) {
            pq.poll();
        }
 
