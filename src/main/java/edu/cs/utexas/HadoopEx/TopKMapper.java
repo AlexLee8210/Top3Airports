@@ -2,6 +2,7 @@ package edu.cs.utexas.HadoopEx;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.util.PriorityQueue;
 import org.apache.log4j.Logger;
 
 
-public class TopKMapper extends Mapper<Text, Text, Text, IntWritable> {
+public class TopKMapper extends Mapper<Text, Text, Text, IntPairWritable> {
 
 	private Logger logger = Logger.getLogger(TopKMapper.class);
 
@@ -32,13 +33,20 @@ public class TopKMapper extends Mapper<Text, Text, Text, IntWritable> {
 	public void map(Text key, Text value, Context context)
 			throws IOException, InterruptedException {
 
+		try {
+			// System.out.println("\n ------------------- TOP K MAPPER ------------------- \n");
+			// System.out.println(key + ": " + value);
+			String[] parsed = value.toString().split(",");
+			int count = Integer.parseInt(parsed[0]);
+			int delay = Integer.parseInt(parsed[1]);
 
-		int count = Integer.parseInt(value.toString());
+			pq.add(new WordAndCount(new Text(key), new IntPairWritable(count, delay)));
 
-		pq.add(new WordAndCount(new Text(key), new IntWritable(count)) );
-
-		if (pq.size() > 3) {
-			pq.poll();
+			if (pq.size() > 3) {
+				pq.poll();
+			}
+		} catch (Exception e) {
+			// e.printStackTrace();
 		}
 	}
 
@@ -46,9 +54,9 @@ public class TopKMapper extends Mapper<Text, Text, Text, IntWritable> {
 
 
 		while (pq.size() > 0) {
-			WordAndCount wordAndCount = pq.poll();
-			context.write(wordAndCount.getWord(), wordAndCount.getCount());
 			logger.info("TopKMapper PQ Status: " + pq.toString());
+			WordAndCount wordAndCount = pq.poll();
+			context.write(wordAndCount.getWord(), wordAndCount.getTup());
 		}
 	}
 
